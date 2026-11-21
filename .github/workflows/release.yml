@@ -19,8 +19,8 @@ jobs:
           java-version: '21'
           cache: maven
           server-id: primelogiclab-releases
-          server-username: REPO_TOKEN_NAME
-          server-password: REPO_TOKEN_SECRET
+          server-username-env-var: REPO_TOKEN_NAME
+          server-password-env-var: REPO_TOKEN_SECRET
       - name: Check the tag matches the POM version
         run: |
           tag="${GITHUB_REF_NAME#v}"
