@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd"
+         child.project.url.inherit.append.path="false">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.primelogiclab.mailroom</groupId>
+    <artifactId>mailroom-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>mailroom-parent</name>
+    <description>Shared Maven parent POM for the mailroom email libraries: Java 8 target, test-JDK switch and release settings.</description>
+    <url>https://github.com/primelogiclabio/mailroom-parent</url>
+    <inceptionYear>2026</inceptionYear>
+
+    <organization>
+        <name>PrimeLogicLab</name>
+        <url>https://primelogiclab.io</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>primelogiclabio</id>
+            <name>PrimeLogicLab</name>
+            <url>https://primelogiclab.io</url>
+        </developer>
+    </developers>
+
+    <scm child.scm.connection.inherit.append.path="false"
+         child.scm.developerConnection.inherit.append.path="false"
+         child.scm.url.inherit.append.path="false">
+        <connection>scm:git:https://github.com/primelogiclabio/mailroom-parent.git</connection>
+        <developerConnection>scm:git:https://github.com/primelogiclabio/mailroom-parent.git</developerConnection>
+        <url>https://github.com/primelogiclabio/mailroom-parent</url>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/primelogiclabio/mailroom-parent/issues</url>
+    </issueManagement>
+
+    <properties>
+        <!-- Plain Java 8 bytecode everywhere; the build itself runs on JDK 21. -->
+        <maven.compiler.release>8</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- Each jar module sets module.name, which becomes its Automatic-Module-Name (the java-module profile
+             checks it). Profiles, and JaCoCo later, put JVM options for the test run in argLine. -->
+        <argLine></argLine>
+
+        <junit.version>5.14.4</junit.version>
+        <assertj.version>3.27.7</assertj.version>
+
+        <compiler-plugin.version>3.16.0</compiler-plugin.version>
+        <surefire.version>3.6.1</surefire.version>
+        <jar-plugin.version>3.5.1</jar-plugin.version>
+        <source-plugin.version>3.4.0</source-plugin.version>
+        <javadoc-plugin.version>3.12.0</javadoc-plugin.version>
+        <deploy-plugin.version>3.2.0</deploy-plugin.version>
+        <install-plugin.version>3.2.0</install-plugin.version>
+        <resources-plugin.version>3.5.0</resources-plugin.version>
+        <clean-plugin.version>3.5.0</clean-plugin.version>
+        <site-plugin.version>3.22.0</site-plugin.version>
+        <enforcer-plugin.version>3.7.0</enforcer-plugin.version>
+        <extra-enforcer-rules.version>1.12.1</extra-enforcer-rules.version>
+        <jacoco.version>0.8.16</jacoco.version>
+        <versions-plugin.version>2.25.2</versions-plugin.version>
+        <help-plugin.version>3.6.0</help-plugin.version>
+        <wrapper-plugin.version>3.3.4</wrapper-plugin.version>
+    </properties>
+
+    <!-- Apps and child repos need the same entries to find this parent; see the README. -->
+    <repositories>
+        <repository>
+            <id>primelogiclab-releases</id>
+            <url>https://repo.primelogiclab.io/releases</url>
+            <releases><enabled>true</enabled></releases>
+            <snapshots><enabled>false</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>primelogiclab-snapshots</id>
+            <url>https://repo.primelogiclab.io/snapshots</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <repository>
+            <id>primelogiclab-releases</id>
+            <url>https://repo.primelogiclab.io/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>primelogiclab-snapshots</id>
+            <url>https://repo.primelogiclab.io/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- JUnit 5.x and AssertJ 3.x: JUnit 6 and AssertJ 4 need newer than Java 8. -->
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.assertj</groupId>
+                <artifactId>assertj-core</artifactId>
+                <version>${assertj.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${compiler-plugin.version}</version>
+                    <configuration>
+                        <compilerArgs>
+                            <!-- JDK 21+ warns that release 8 is obsolete; that is expected here. -->
+                            <arg>-Xlint:-options</arg>
+                        </compilerArgs>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${surefire.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${surefire.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${jar-plugin.version}</version>
+                    <configuration>
+                        <archive>
+                            <manifest>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Automatic-Module-Name>${module.name}</Automatic-Module-Name>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${source-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${javadoc-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${deploy-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${install-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${resources-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${clean-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>${site-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${enforcer-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-help-plugin</artifactId>
+                    <version>${help-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-wrapper-plugin</artifactId>
+                    <version>${wrapper-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>extra-enforcer-rules</artifactId>
+                        <version>${extra-enforcer-rules.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>enforce-build-rules</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <requireMavenVersion>
+                                    <version>[3.9,)</version>
+                                </requireMavenVersion>
+                                <requireJavaVersion>
+                                    <version>[21,)</version>
+                                    <message>Build with JDK 21 or newer; tests run on other JDKs through -Dtest.jdk.</message>
+                                </requireJavaVersion>
+                                <!-- Stops a module silently resolving an older mailroom-core (Maven's nearest-wins). -->
+                                <requireUpperBoundDeps/>
+                                <bannedDependencies>
+                                    <message>This library line needs newer than Java 8; stay on JUnit 5, Mockito 4, AssertJ 3 and Jackson 2.</message>
+                                    <excludes>
+                                        <exclude>org.junit.jupiter:*:[6,)</exclude>
+                                        <exclude>org.junit.platform:*:[6,)</exclude>
+                                        <exclude>org.junit.vintage:*:[6,)</exclude>
+                                        <exclude>org.mockito:*:[5,)</exclude>
+                                        <exclude>tools.jackson.*:*</exclude>
+                                        <exclude>org.assertj:*:[4,)</exclude>
+                                    </excludes>
+                                </bannedDependencies>
+                                <enforceBytecodeVersion>
+                                    <maxJdkVersion>1.8</maxJdkVersion>
+                                    <ignoredScopes>
+                                        <ignoredScope>test</ignoredScope>
+                                    </ignoredScopes>
+                                    <ignoreClasses>
+                                        <ignoreClass>module-info</ignoreClass>
+                                    </ignoreClasses>
+                                </enforceBytecodeVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- Every module with Java sources must name its module (Automatic-Module-Name). -->
+        <profile>
+            <id>java-module</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/src/main/java</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>enforce-module-name</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <requireProperty>
+                                            <property>module.name</property>
+                                            <regex>[a-z][a-z0-9_]*(\.[a-z][a-z0-9_]*)*</regex>
+                                            <message>Set the module.name property (for example io.primelogiclab.mailroom.core); it becomes the jar's Automatic-Module-Name.</message>
+                                        </requireProperty>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- -Dtest.jdk=8|21|25: Maven runs on JDK 21, the tests run on the JDK named in ~/.m2/toolchains.xml. -->
+        <profile>
+            <id>test-jdk</id>
+            <activation>
+                <property>
+                    <name>test.jdk</name>
+                </property>
+            </activation>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <jdkToolchain>
+                                    <version>${test.jdk}</version>
+                                </jdkToolchain>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <configuration>
+                                <jdkToolchain>
+                                    <version>${test.jdk}</version>
+                                </jdkToolchain>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+        </profile>
+
+        <!-- On JDK 21 a virtual thread blocked inside synchronized pins its carrier; report it.
+             The flag was removed in JDK 24, so it is only set for 21. -->
+        <profile>
+            <id>pinning-trace</id>
+            <activation>
+                <property>
+                    <name>test.jdk</name>
+                    <value>21</value>
+                </property>
+            </activation>
+            <properties>
+                <argLine>-Djdk.tracePinnedThreads=full</argLine>
+            </properties>
+        </profile>
+
+        <!-- Release builds attach sources and Javadoc jars (as Maven Central would require). -->
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
