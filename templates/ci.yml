@@ -53,8 +53,8 @@ jobs:
           java-version: '21'
           cache: maven
           server-id: primelogiclab-snapshots
-          server-username: REPO_TOKEN_NAME
-          server-password: REPO_TOKEN_SECRET
+          server-username-env-var: REPO_TOKEN_NAME
+          server-password-env-var: REPO_TOKEN_SECRET
       - name: Deploy the snapshot to repo.primelogiclab.io
         run: ./mvnw -B deploy
         env:
