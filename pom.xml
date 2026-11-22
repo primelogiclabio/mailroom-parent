@@ -361,6 +361,30 @@
                 <mailroom.java>8</mailroom.java>
             </properties>
             <build>
+                <!-- The Java 8 set is tested on JDK 8 only, so its tests always run on the JDK 8 toolchain, with or
+                     without -Dtest.jdk=8; on -Dtest.jdk=21 or 25 they skip (profiles below). -->
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-plugin</artifactId>
+                            <configuration>
+                                <jdkToolchain>
+                                    <version>8</version>
+                                </jdkToolchain>
+                            </configuration>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-failsafe-plugin</artifactId>
+                            <configuration>
+                                <jdkToolchain>
+                                    <version>8</version>
+                                </jdkToolchain>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
                 <plugins>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
@@ -412,6 +436,39 @@
                 </property>
                 <file>
                     <missing>${basedir}/java8-set</missing>
+                </file>
+            </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+
+        <!-- -Dtest.jdk=21 and 25 test the Java 21 set; the Java 8 set is tested on JDK 8 only, so its tests skip.
+             One profile per JDK: an activation can't say "set, and not 8". -->
+        <profile>
+            <id>java8-set-on-jdk21</id>
+            <activation>
+                <property>
+                    <name>test.jdk</name>
+                    <value>21</value>
+                </property>
+                <file>
+                    <exists>${basedir}/java8-set</exists>
+                </file>
+            </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
+        </profile>
+        <profile>
+            <id>java8-set-on-jdk25</id>
+            <activation>
+                <property>
+                    <name>test.jdk</name>
+                    <value>25</value>
+                </property>
+                <file>
+                    <exists>${basedir}/java8-set</exists>
                 </file>
             </activation>
             <properties>

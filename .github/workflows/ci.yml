@@ -31,7 +31,7 @@ jobs:
       - name: Build and install the parent
         run: ./mvnw -B install
       # The smoke project checks the parent's test-jdk switch and both Java sets: each module's tests must run on the
-      # matrix JDK (on 8, the Java 21 module's tests skip).
+      # matrix JDK: on 8 only the Java 8 module's tests run, on 21 and 25 only the Java 21 module's.
       - name: Smoke test on JDK ${{ matrix.jdk }}
         run: ./mvnw -B -f src/it/smoke/pom.xml verify -Dtest.jdk=${{ matrix.jdk }}
 

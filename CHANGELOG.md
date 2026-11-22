@@ -5,6 +5,14 @@ All notable changes to mailroom-parent are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The Java 8 set is tested on JDK 8 only: its tests always run on the JDK 8 toolchain (with or without
+  `-Dtest.jdk=8`) and skip with `-Dtest.jdk=21` or `25`. The Java 21 set is still tested on 21 and 25, and skipped on 8.
+  Builds now need a JDK 8 toolchain to run the Java 8 set's tests.
+- The ci.yml snapshot deploy and release.yml templates set up JDK 8 next to 21, since they run the tests too. Repos
+  moving to 0.3.0 copy both templates again.
+
 ## [0.2.0] - 2026-11-22
 
 ### Changed

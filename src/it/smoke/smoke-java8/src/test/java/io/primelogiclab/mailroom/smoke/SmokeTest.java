@@ -7,13 +7,16 @@ import org.junit.jupiter.api.Test;
 
 class SmokeTest {
 
-    /** With -Dtest.jdk=N the parent's test-jdk profile must run this test on JDK N, not on Maven's own JDK. */
+    /**
+     * The Java 8 set is tested on JDK 8 only: the parent runs these tests on the JDK 8 toolchain with or without
+     * -Dtest.jdk=8, and skips them with -Dtest.jdk=21 or 25.
+     */
     @Test
-    void runsOnTheRequestedJdk() {
+    void runsOnJava8() {
         String expected = System.getProperty("expected.jdk", "");
-        assumeTrue(expected.matches("[0-9]+"), "run with -Dtest.jdk=<8|21|25> to check the JDK switch");
+        assumeTrue(expected.isEmpty() || expected.equals("8"), "the Java 8 set's tests run only on JDK 8");
         System.out.println("Tests running on Java " + System.getProperty("java.version"));
-        assertThat(Smoke.javaFeatureVersion()).isEqualTo(Integer.parseInt(expected));
+        assertThat(Smoke.javaFeatureVersion()).isEqualTo(8);
     }
 
     @Test
