@@ -84,8 +84,9 @@ Without `-Dtest.jdk`, the tests run on the JDK that runs Maven. In GitHub Action
 `templates/ci.yml` and `templates/release.yml` are the GitHub Actions workflows each mailroom repo copies into
 `.github/workflows/`:
 
-- **ci.yml** tests on JDK 8, 21 and 25 on every push and pull request. A `build-ok` job is the one required check. A
-  push to `main` deploys a snapshot.
+- **ci.yml** tests on JDK 8, 21 and 25 on every push and pull request, and runs the release build (`-P release`,
+  with the sources and Javadoc jars) so a Javadoc error shows before a tag. A `build-ok` job, which needs both, is the
+  one required check. A push to `main` deploys a snapshot.
 - **release.yml** runs on a tag `vX.Y.Z`. It checks that the tag matches the POM version without `-SNAPSHOT`, sets that
   version, and deploys with `-P release`.
 
