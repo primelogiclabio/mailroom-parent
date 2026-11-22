@@ -18,6 +18,8 @@ class SmokeTest {
 
     @Test
     void compiledForJava8() throws Exception {
+        assertThat(System.getProperty("expected.release")).as("the java8-set file puts this module in the Java 8 set")
+                .isEqualTo("8");
         try (java.io.DataInputStream in = new java.io.DataInputStream(
                 Smoke.class.getResourceAsStream("Smoke.class"))) {
             in.readInt();

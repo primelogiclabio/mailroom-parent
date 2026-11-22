@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Smoke project for mailroom-parent's own CI: a tiny child that proves the parent's settings work.
-     Not a module and never deployed. Run after installing the parent:
+<!-- Smoke project for mailroom-parent's own CI: two tiny children that prove the parent's settings work, one per
+     Java set. Not modules of the parent and never deployed. Run after installing the parent:
        ./mvnw -B install
-       ./mvnw -B -f src/it/smoke/pom.xml verify -Dtest.jdk=8   (or 21, 25) -->
+       ./mvnw -B -f src/it/smoke/pom.xml verify -Dtest.jdk=8   (or 21, 25)
+     On JDK 8 the Java 21 module's tests skip; the Java 8 module's tests run on every JDK. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -16,38 +17,33 @@
     </parent>
 
     <artifactId>mailroom-parent-smoke</artifactId>
+    <packaging>pom</packaging>
     <name>mailroom-parent smoke test</name>
 
+    <modules>
+        <module>smoke-java21</module>
+        <module>smoke-java8</module>
+    </modules>
+
     <properties>
-        <module.name>io.primelogiclab.mailroom.smoke</module.name>
         <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <systemPropertyVariables>
-                        <expected.jdk>${test.jdk}</expected.jdk>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
-        </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <configuration>
+                        <systemPropertyVariables>
+                            <expected.jdk>${test.jdk}</expected.jdk>
+                            <expected.release>${mailroom.java}</expected.release>
+                        </systemPropertyVariables>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>

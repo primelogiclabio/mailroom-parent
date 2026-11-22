@@ -50,8 +50,10 @@
     </issueManagement>
 
     <properties>
-        <!-- Plain Java 8 bytecode everywhere; the build itself runs on JDK 21. -->
-        <maven.compiler.release>8</maven.compiler.release>
+        <!-- The module's Java set: 21 by default, 8 when a java8-set file sits next to its pom.xml (profile
+             java8-set). The build itself runs on JDK 21. -->
+        <mailroom.java>21</mailroom.java>
+        <maven.compiler.release>${mailroom.java}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <!-- Each jar module sets module.name, which becomes its Automatic-Module-Name (the java-module profile
@@ -254,8 +256,9 @@
                                 </requireJavaVersion>
                                 <!-- Stops a module silently resolving an older mailroom-core (Maven's nearest-wins). -->
                                 <requireUpperBoundDeps/>
+                                <!-- Both Java sets, while they keep the same API and tests: these lines need Java 17+. -->
                                 <bannedDependencies>
-                                    <message>This library line needs newer than Java 8; stay on JUnit 5, Mockito 4, AssertJ 3 and Jackson 2.</message>
+                                    <message>Both Java sets stay on JUnit 5, Mockito 4, AssertJ 3 and Jackson 2 while they share their API and tests; this line needs Java 17+.</message>
                                     <excludes>
                                         <exclude>org.junit.jupiter:*:[6,)</exclude>
                                         <exclude>org.junit.platform:*:[6,)</exclude>
@@ -265,15 +268,6 @@
                                         <exclude>org.assertj:*:[4,)</exclude>
                                     </excludes>
                                 </bannedDependencies>
-                                <enforceBytecodeVersion>
-                                    <maxJdkVersion>1.8</maxJdkVersion>
-                                    <ignoredScopes>
-                                        <ignoredScope>test</ignoredScope>
-                                    </ignoredScopes>
-                                    <ignoreClasses>
-                                        <ignoreClass>module-info</ignoreClass>
-                                    </ignoreClasses>
-                                </enforceBytecodeVersion>
                             </rules>
                         </configuration>
                     </execution>
@@ -316,6 +310,113 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <!-- Java 21 set (no java8-set file next to the pom.xml): it must not pull in the Java 8 set's artifacts. -->
+        <profile>
+            <id>java21-set</id>
+            <activation>
+                <file>
+                    <missing>${basedir}/java8-set</missing>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>enforce-java21-set</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <bannedDependencies>
+                                            <message>This module is in the Java 21 set: depend on the unsuffixed mailroom artifacts, not the -java8 ones.</message>
+                                            <excludes>
+                                                <exclude>io.primelogiclab.mailroom:*-java8</exclude>
+                                            </excludes>
+                                        </bannedDependencies>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Java 8 set: a java8-set file next to the module's pom.xml. Java 8 bytecode, Java 8 dependencies, and only
+             the -java8 mailroom artifacts. -->
+        <profile>
+            <id>java8-set</id>
+            <activation>
+                <file>
+                    <exists>${basedir}/java8-set</exists>
+                </file>
+            </activation>
+            <properties>
+                <mailroom.java>8</mailroom.java>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-enforcer-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>enforce-java8-set</id>
+                                <goals>
+                                    <goal>enforce</goal>
+                                </goals>
+                                <configuration>
+                                    <rules>
+                                        <bannedDependencies>
+                                            <message>This module is in the Java 8 set: depend on the -java8 mailroom artifacts, not the Java 21 ones.</message>
+                                            <excludes>
+                                                <exclude>io.primelogiclab.mailroom:*</exclude>
+                                            </excludes>
+                                            <includes>
+                                                <include>io.primelogiclab.mailroom:*-java8</include>
+                                            </includes>
+                                        </bannedDependencies>
+                                        <!-- A JDK 21 build can't read class files newer than 21, so the Java 21 set
+                                             needs no such check. -->
+                                        <enforceBytecodeVersion>
+                                            <maxJdkVersion>1.8</maxJdkVersion>
+                                            <ignoredScopes>
+                                                <ignoredScope>test</ignoredScope>
+                                            </ignoredScopes>
+                                            <ignoreClasses>
+                                                <ignoreClass>module-info</ignoreClass>
+                                            </ignoreClasses>
+                                        </enforceBytecodeVersion>
+                                    </rules>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- -Dtest.jdk=8 runs the Java 8 set's tests on JDK 8. The Java 21 set's tests can't run there, so they skip. -->
+        <profile>
+            <id>java21-set-on-jdk8</id>
+            <activation>
+                <property>
+                    <name>test.jdk</name>
+                    <value>8</value>
+                </property>
+                <file>
+                    <missing>${basedir}/java8-set</missing>
+                </file>
+            </activation>
+            <properties>
+                <skipTests>true</skipTests>
+            </properties>
         </profile>
 
         <!-- -Dtest.jdk=8|21|25: Maven runs on JDK 21, the tests run on the JDK named in ~/.m2/toolchains.xml. -->
