@@ -20,7 +20,8 @@ modules such as `mailroom-smtp` and `mailroom-smtp2go`. It holds no code.
   - A module depends only on mailroom artifacts of its own set.
   - In the Java 8 set, runtime dependencies must be Java 8 bytecode.
 - **`-Dtest.jdk=8|21|25`**: runs Surefire and Failsafe on that JDK through Maven toolchains, while Maven stays on 21.
-  On 21 it also turns on `-Djdk.tracePinnedThreads=full`. On 8 the Java 21 set's tests are skipped.
+  On 21 it also turns on `-Djdk.tracePinnedThreads=full`. Each set is tested only on its own JDKs: on 8 the Java 21
+  set's tests are skipped, and on 21 and 25 the Java 8 set's.
 - **`release` profile**: attaches sources and Javadoc jars.
 - **Deploys** to `https://repo.primelogiclab.io`: releases to `releases`, snapshots to `snapshots`.
 
@@ -34,7 +35,7 @@ enough). Maven profiles can't read a module's own properties but can check for f
 | | Java 21 set (no `java8-set` file) | Java 8 set (`java8-set` file) |
 | --- | --- | --- |
 | `maven.compiler.release` | 21 | 8 |
-| Tests with `-Dtest.jdk=8` | skipped | run on JDK 8 |
+| Tests run on | Maven's JDK, or `-Dtest.jdk=21` / `25`; skipped with `-Dtest.jdk=8` | JDK 8 only (its toolchain, with or without `-Dtest.jdk=8`); skipped with `-Dtest.jdk=21` / `25` |
 | mailroom dependencies | unsuffixed only; `*-java8` is banned | `*-java8` only |
 | Bytecode check on runtime dependencies | none needed: a JDK 21 build can't read newer class files | Java 8 |
 
@@ -119,7 +120,7 @@ to the repositories.
 ```
 
 `src/it/smoke` is a small child project used to check the parent's settings, with one module per Java set. On
-JDK 8 its Java 21 module skips its tests. It is never deployed.
+JDK 8 its Java 21 module skips its tests, and on 21 and 25 its Java 8 module does. It is never deployed.
 
 ## Compatibility
 
@@ -127,6 +128,7 @@ JDK 8 its Java 21 module skips its tests. It is never deployed.
 | --- | --- | --- | --- |
 | 0.1.x | Maven 3.9+, JDK 21+ | JDK 8, 21, 25 | Java 8 bytecode |
 | 0.2.x | Maven 3.9+, JDK 21+ | Java 21 set: JDK 21, 25; Java 8 set: JDK 8, 21, 25 | Java 21 bytecode, or Java 8 for the Java 8 set |
+| 0.3.x | Maven 3.9+, JDK 21+, a JDK 8 toolchain | Java 21 set: JDK 21, 25; Java 8 set: JDK 8 | Java 21 bytecode, or Java 8 for the Java 8 set |
 
 ## License
 
