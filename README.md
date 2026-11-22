@@ -108,6 +108,8 @@ Without `-Dtest.jdk`, the tests run on the JDK that runs Maven. In GitHub Action
   one required check. A push to `main` deploys a snapshot.
 - **release.yml** runs on a tag `vX.Y.Z`. It checks that the tag matches the POM version without `-SNAPSHOT`, sets that
   version, and deploys with `-P release`.
+- The snapshot deploy and the release run the tests again before deploying, so they set up JDK 8 next to 21:
+  from 0.3.0 the Java 8 set's tests need its toolchain.
 
 Both need the `REPO_TOKEN_NAME` and `REPO_TOKEN_SECRET` repository secrets, a Reposilite access token that can write
 to the repositories.
