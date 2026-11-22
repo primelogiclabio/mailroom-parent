@@ -5,6 +5,8 @@ All notable changes to mailroom-parent are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-22
+
 ### Changed
 
 - The Java 8 set is tested on JDK 8 only: its tests always run on the JDK 8 toolchain (with or without
@@ -36,6 +38,7 @@ All notable changes to mailroom-parent are listed here. The format follows
 - `release` profile with sources and Javadoc jars; deploys to `repo.primelogiclab.io`.
 - CI and release workflow templates for the mailroom repos.
 
-[Unreleased]: https://github.com/primelogiclabio/mailroom-parent/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/primelogiclabio/mailroom-parent/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/primelogiclabio/mailroom-parent/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/primelogiclabio/mailroom-parent/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/primelogiclabio/mailroom-parent/tree/v0.1.0
