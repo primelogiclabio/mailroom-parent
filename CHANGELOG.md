@@ -5,6 +5,11 @@ All notable changes to mailroom-parent are listed here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- The ci.yml template runs the release build (`-P release`, sources and Javadoc jars, tests skipped) on every push
+  and pull request, and `build-ok` needs it, so a Javadoc error fails CI instead of the release after the tag.
+
 ## [0.1.0] - 2026-11-21
 
 ### Added
