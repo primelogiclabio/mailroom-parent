@@ -5,6 +5,8 @@ All notable changes to mailroom-parent are listed here. The format follows
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-22
+
 ### Changed
 
 - Two Java sets: modules compile for Java 21 by default, and for Java 8 when a `java8-set` file sits next to their
@@ -26,5 +28,6 @@ All notable changes to mailroom-parent are listed here. The format follows
 - `release` profile with sources and Javadoc jars; deploys to `repo.primelogiclab.io`.
 - CI and release workflow templates for the mailroom repos.
 
-[Unreleased]: https://github.com/primelogiclabio/mailroom-parent/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/primelogiclabio/mailroom-parent/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/primelogiclabio/mailroom-parent/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/primelogiclabio/mailroom-parent/tree/v0.1.0
