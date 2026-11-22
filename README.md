@@ -1,26 +1,44 @@
 # mailroom-parent
 
-Shared Maven parent POM for the mailroom email libraries: Java 8 target, test-JDK switch and release settings.
+Shared Maven parent POM for the mailroom email libraries: the Java 21 and Java 8 sets, test-JDK switch and release settings.
 
 Every mailroom module inherits it: `mailroom-core`, `mailroom-http`, `mailroom-test`, `mailroom-tck` and the transport
 modules such as `mailroom-smtp` and `mailroom-smtp2go`. It holds no code.
 
 ## What it sets
 
-- **Java 8 bytecode** (`maven.compiler.release=8`), so one set of jars runs on Java 8, 21 and 25. The build itself runs
-  on JDK 21.
+- **Two Java sets** (see below): Java 21 bytecode by default, Java 8 bytecode for modules marked as the Java 8 set.
+  The build itself runs on JDK 21.
 - **Pinned plugin versions** and the **JUnit 5 and AssertJ 3** versions every repo uses.
 - **`Automatic-Module-Name`** in each jar's manifest, taken from the module's `module.name` property. A module with
   Java sources must set it.
 - **Enforcer rules:**
   - Maven 3.9 or newer and a JDK 21 or newer build.
   - Upper-bound dependencies, so a module can't quietly resolve an older `mailroom-core`.
-  - Bans on library lines that need newer than Java 8: JUnit 6, Mockito 5, AssertJ 4 and Jackson 3 (`tools.jackson`).
-  - Runtime dependencies must be Java 8 bytecode.
+  - Bans on library lines that need Java 17+: JUnit 6, Mockito 5, AssertJ 4 and Jackson 3 (`tools.jackson`). Both
+    sets keep them while they share their API and tests.
+  - A module depends only on mailroom artifacts of its own set.
+  - In the Java 8 set, runtime dependencies must be Java 8 bytecode.
 - **`-Dtest.jdk=8|21|25`**: runs Surefire and Failsafe on that JDK through Maven toolchains, while Maven stays on 21.
-  On 21 it also turns on `-Djdk.tracePinnedThreads=full`.
+  On 21 it also turns on `-Djdk.tracePinnedThreads=full`. On 8 the Java 21 set's tests are skipped.
 - **`release` profile**: attaches sources and Javadoc jars.
 - **Deploys** to `https://repo.primelogiclab.io`: releases to `releases`, snapshots to `snapshots`.
+
+## Two Java sets
+
+Each mailroom module comes twice, with the same version and packages: an unsuffixed artifact compiled for Java 21
+(`mailroom-core`) and a `-java8` twin compiled for Java 8 (`mailroom-core-java8`). A module joins the Java 8 set by
+having a file named `java8-set` next to its `pom.xml`; its content doesn't matter (a comment line saying why is
+enough). Maven profiles can't read a module's own properties but can check for files, which is why it's a file.
+
+| | Java 21 set (no `java8-set` file) | Java 8 set (`java8-set` file) |
+| --- | --- | --- |
+| `maven.compiler.release` | 21 | 8 |
+| Tests with `-Dtest.jdk=8` | skipped | run on JDK 8 |
+| mailroom dependencies | unsuffixed only; `*-java8` is banned | `*-java8` only |
+| Bytecode check on runtime dependencies | none needed: a JDK 21 build can't read newer class files | Java 8 |
+
+The property `mailroom.java` (21 or 8) holds the module's set, for plugins that need it.
 
 ## Using it
 
@@ -30,7 +48,7 @@ Maven reads the parent before anything the parent declares, so a child needs the
 <parent>
     <groupId>io.primelogiclab.mailroom</groupId>
     <artifactId>mailroom-parent</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <relativePath/>
 </parent>
 
@@ -100,13 +118,15 @@ to the repositories.
 ./mvnw -f src/it/smoke/pom.xml verify -Dtest.jdk=8
 ```
 
-`src/it/smoke` is a small child project used to check the parent's settings. It is never deployed.
+`src/it/smoke` is a small child project used to check the parent's settings, with one module per Java set. On
+JDK 8 its Java 21 module skips its tests. It is never deployed.
 
 ## Compatibility
 
 | mailroom-parent | Build with | Tests run on | Produces |
 | --- | --- | --- | --- |
 | 0.1.x | Maven 3.9+, JDK 21+ | JDK 8, 21, 25 | Java 8 bytecode |
+| 0.2.x | Maven 3.9+, JDK 21+ | Java 21 set: JDK 21, 25; Java 8 set: JDK 8, 21, 25 | Java 21 bytecode, or Java 8 for the Java 8 set |
 
 ## License
 

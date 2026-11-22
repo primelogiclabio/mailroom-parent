@@ -7,6 +7,10 @@ All notable changes to mailroom-parent are listed here. The format follows
 
 ### Changed
 
+- Two Java sets: modules compile for Java 21 by default, and for Java 8 when a `java8-set` file sits next to their
+  `pom.xml`. Each set may depend only on its own mailroom artifacts (`*-java8` for the Java 8 set); the Java 8 bytecode
+  check now applies to the Java 8 set only; with `-Dtest.jdk=8` the Java 21 set's tests are skipped. The smoke
+  project has one module per set.
 - The ci.yml template runs the release build (`-P release`, sources and Javadoc jars, tests skipped) on every push
   and pull request, and `build-ok` needs it, so a Javadoc error fails CI instead of the release after the tag.
 
